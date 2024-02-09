@@ -100,7 +100,7 @@ const Home = () => {
         var newList = [];
         list.map((ele) => {
             if (ele.title === title) {
-                ele.status = true;
+                ele.status = !ele.status;
             }
             newList.push(ele)
         })
@@ -114,7 +114,7 @@ const Home = () => {
                 })
             }).catch(err => {
                 console.log(err);
-
+                // setList(list);
                 setStatus('loaded');
                 alert('you can not make a transaction (add, delete, update) in the offline state');
             })
