@@ -5,7 +5,7 @@ const Home = () => {
 
     const [list, setList] = useState([]);
     const [title, setTitle] = useState('');
-    const [taskStatus, setTaskStatus] = useState(false);
+    // const [taskStatus, setTaskStatus] = useState(false);
     const [description, setDesciption] = useState('');
     const [priority, setPriority] = useState('low');
     const [status, setStatus] = useState('loading')
@@ -23,6 +23,7 @@ const Home = () => {
                 });
             })
             .catch((error) => {
+                alert('you can not make a read transaction in the offline state');
                 console.error('Error fetching data:', error);
             });
 
@@ -31,25 +32,98 @@ const Home = () => {
 
     }, [title, description, priority])
 
+    const jsonData = JSON.stringify([...list, { status: false, title, description, priority }]);
+
+    // Construct the URL with the JSON string as a query parameter
+    const url = `${URI}addTask?json=${encodeURIComponent(jsonData)}`;
+
+
     const requestOptions = {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json' // Specify the content type as JSON
         },
-        body: JSON.stringify([...title, { status, title, description, priority }]) // Convert the data to JSON format
+        // body: JSON.stringify([...list, { status: false, title, description, priority }]) // Convert the data to JSON format
     };
     const addTask = (title, description, priority) => {
-        console.log("from addTask", title, description, priority);
+        setStatus('loading')
+        // console.log("from addTask", title, description, priority);
 
-        fetch(`${URI}addTask`, requestOptions)
+        fetch(`${url}`, requestOptions)
             .then((res) => {
                 res.json().then(result => {
-
+                    // console.log(result)
+                    setList(result);
+                    setStatus('loaded');
                 })
+            }).catch(err => {
+                console.log(err);
+                setStatus('loaded');
+                alert('you can not make a transaction (add, delete, update) in the offline state');
             })
 
     }
+    const deleteTask = async (title) => {
+        setStatus('loading')
+        // console.log("from addTask", title, description, priority);
+        var newList = [];
+        list.map((ele) => {
+            if (ele.title != title) {
+                // console.log(ele);
+                newList.push(ele)
+                // return ele;
+            }
+        })
+        // await setList(newList)
+        fetch(`${URI}addTask?json=${encodeURIComponent(JSON.stringify(newList))}`, requestOptions)
+            .then((res) => {
+                res.json().then(result => {
+                    // console.log(result)
+                    setList(result);
+                    setStatus('loaded');
+                })
+            }).catch(err => {
+                console.log(err);
 
+                setStatus('loaded');
+                alert('you can not make a transaction (add, delete, update) in the offline state');
+            })
+        // .catch(err => {
+        //     console.log(err)
+        //     setStatus('loaded');
+
+        // })
+    }
+
+    const updateTask = async (title) => {
+        setStatus('loading')
+        var newList = [];
+        list.map((ele) => {
+            if (ele.title === title) {
+                ele.status = true;
+            }
+            newList.push(ele)
+        })
+        // await setList(newList)
+        fetch(`${URI}addTask?json=${encodeURIComponent(JSON.stringify(newList))}`, requestOptions)
+            .then((res) => {
+                res.json().then(result => {
+                    // console.log(result)
+                    setList(result);
+                    setStatus('loaded');
+                })
+            }).catch(err => {
+                console.log(err);
+
+                setStatus('loaded');
+                alert('you can not make a transaction (add, delete, update) in the offline state');
+            })
+        // .catch(err => {
+        //     console.log(err)
+        //     setStatus('loaded');
+
+        // })
+    }
 
     return (
         <>
@@ -84,11 +158,11 @@ const Home = () => {
                                     {list.map((ele) => {
                                         // console.log("hello world: ", ele);
                                         return <div className='task'>
-                                            <span style={{ width: '15%', textAlign: 'center' }}><input type="checkbox" checked={ele.status} name={ele.title} id={ele.title} /></span>
+                                            <span style={{ width: '15%', textAlign: 'center' }}><input type="checkbox" checked={ele.status} name={ele.title} id={ele.title} onClick={() => updateTask(ele.title)} /></span>
                                             <span style={{ width: '20%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.title}</span>
                                             <span style={{ width: '40%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.description} </span>
                                             <span style={{ width: '15%', textAlign: 'center' }}>{ele.priority}</span>
-                                            <span style={{ width: '10%', textAlign: 'center' }}><button>❌</button></span>
+                                            <span style={{ width: '10%', textAlign: 'center' }}><button onClick={() => deleteTask(ele.title)}>❌</button></span>
 
                                         </div>
                                     })
@@ -96,7 +170,6 @@ const Home = () => {
                             )
 
                         }
-                        {/* </div> */}
                         {status === 'loading' && <span className="loader"></span>}
                     </div>
                 </div>

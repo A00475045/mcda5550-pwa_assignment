@@ -1,70 +1,27 @@
-
-// const CACHE_NAME = 'version-1';
-// const urlsToCache = ["index.html", "offline.html"]
-
-// this.addEventListener('install', (event) => {
-//   event.waitUntil(
-//     caches.open(CACHE_NAME).then((cache) => {
-//       console.log("Opened Cache");
-//       return cache.addAll(urlsToCache);
-//     })
-//   )
-// })
-
-// this.addEventListener('fetch', (event) => {
-//   event.respondWith(
-//     caches.match(event.request).then((res) => {
-//       return fetch(event.request).catch(() => caches.match('offline.html'));
-//     })
-//   )
-// })
-
-// this.addEventListener('activate', (event) => {
-//   const cacheWhiteList = [];
-//   cacheWhiteList.push(CACHE_NAME);
-
-  
-//   event.waitUtil(
-//     caches.keys().then((cacheNames) => Promise.all(
-//       cacheNames.map((cacheName) => {
-//         if(!cacheWhiteList.includes(cacheName)){
-//           return caches.delete(cacheName);
-//         }
-//       })
-//     ))
-//   )
-// })
-
-
-//-----------------------
 const CACHE_NAME = 'version-1';
 const urlsToCache = ["index.html", "offline.html"];
 
 this.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // console.log("Opened Cache");
       return cache.addAll(urlsToCache);
     })
   );
 });
 
+
 this.addEventListener('fetch', (event) => {
   
-
+  let url = new URL(event.request.url);
+  
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // If the request is found in the cache, return the cached response
-      if (cachedResponse) {
-        // console.log('1')
-        return cachedResponse;
-      }
+    caches.match(url.pathname).then((cachedResponse) => {
 
-      // If the device is offline, try to load data from localStorage
       if (!navigator.onLine) {
-        // console.log('inside the online thing')
-        const url = event.request.url;
-        const cachedData = localStorage.getItem(url);
+        console.log('2')
+        const url = new URL(event.request.url);
+        var cachedData; 
+           cachedData = localStorage.getItem(url);
         if (cachedData) {
           return new Response(cachedData, {
             headers: { 'Content-Type': 'application/json' }
@@ -72,35 +29,55 @@ this.addEventListener('fetch', (event) => {
         }
       }
 
-      // Otherwise, fetch the request from the network
       return fetch(event.request).then((response) => {
-        // If the response is valid, clone it and store it in the cache
         if (response && response.status === 200) {
-          // console.log('3', response, event.request)
+          console.log('3', response, event.request)
           const clonedResponse = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request , clonedResponse);
+            if(url.pathname === '/addTask'){
+              // console.log("========================",url.pathname)
+              cache.put('/getTasks' , clonedResponse);
+            }else{
+            // console.log("&&&&&&&&&&&&&&&&&&&&&&&&", url.pathname, clonedResponse )
+            cache.put(url.pathname , clonedResponse);
+          }
           });
-          // Store the data in localStorage
           if (!event.request.url.endsWith('offline.html')) {
-            // console.log('4')
             response.clone().json().then((data) => {
-              localStorage.setItem(event.request.url, JSON.stringify(data));
+              // const url = new URL(event.request.url);
+              
+              if(url.pathname === '/addTask'){
+                console.log("----------",url.pathname)
+                
+                // localStorage.setItem('/getTasks', JSON.stringify(data));  
+              }else {
+
+              // if(localStorage.setItem(url.pathname, JSON.stringify(data))){
+                // console.log(url.pathname, JSON.stringify(data))
+              // }
+            }
             });
           }
         }
-        // console.log(response);
+        console.log(response);
         return response;
       }).catch(() => {
-        // If fetching fails and the device is offline, return the offline page
+        console.log('5')
+
+        if (cachedResponse) {
+        // console.log('1')
+        return cachedResponse;
+      }
+
         if (!navigator.onLine) {
-          // console.log('5')
+          console.log('6')
           return caches.match('offline.html');
         }
       });
     })
   );
 });
+
 
 this.addEventListener('activate', (event) => {
   const cacheWhiteList = [CACHE_NAME];
