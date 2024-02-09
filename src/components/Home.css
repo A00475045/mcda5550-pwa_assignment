@@ -15,7 +15,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* background-color: blue; */
 }
 
 .todo-list {
@@ -24,10 +23,8 @@
     width: 95%;
     border: 1px solid gray;
     border-radius: 2px;
-    /* background-color: blueviolet; */
     display: flex;
     flex-direction: column;
-    /* justify-content: flex-end space-between; */
     align-items: center;
 
 

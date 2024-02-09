@@ -13,21 +13,12 @@
     flex-wrap: wrap;
 }
 
-/* @media (max-width : 818px) {
-    .aboutme-container {
-        flex-direction: column;
-    }
-
-} */
 
 .photo-container {
     min-height: 46vh;
     max-height: 46vh;
     min-width: 46vh;
-    /* transform: translateX(-10vw); */
-    /* background: url('~.\\..\\src\\public\\profile-photo.jpeg'); */
     background-size: 100% 100%;
-    /* Ensures the image covers the entire container */
     background-repeat: no-repeat;
 }
 
@@ -35,7 +26,6 @@
     width: 46vh !important;
     height: 46vh !important;
     border-radius: 125px;
-    /* display: none; */
 }
 
 .photo-cover {
