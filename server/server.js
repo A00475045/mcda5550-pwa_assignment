@@ -11,7 +11,7 @@ app.get('/', (req, resp) => {
     resp.send("hii bro")
 })
 const arr = [ 
-    { status: true, title: "abc1", description: "someDescription1", priority: "high"},
+    { status: false, title: "abc1", description: "someDescription1", priority: "high"},
     { status: false, title: "abc2", description: "someDescription2", priority: "medium"},
     { status: false, title: "abc3", description: "someDescription3", priority: "low"},
     

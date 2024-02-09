@@ -128,14 +128,15 @@ const Home = () => {
                                     </div>
                                     <div className='divider' style={{ transform: 'translate(0)' }}></div>
                                     {list.map((ele) => {
-                                        return <div className='task'>
-                                            <span style={{ width: '15%', textAlign: 'center' }}><input type="checkbox" checked={ele.status} name={ele.title} id={ele.title} onClick={() => updateTask(ele.title)} /></span>
-                                            <span style={{ width: '20%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.title}</span>
-                                            <span style={{ width: '40%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.description} </span>
-                                            <span style={{ width: '15%', textAlign: 'center' }}>{ele.priority}</span>
-                                            <span style={{ width: '10%', textAlign: 'center' }}><button onClick={() => deleteTask(ele.title)}>❌</button></span>
+                                        if (!ele.status)
+                                            return <div className='task'>
+                                                <span style={{ width: '15%', textAlign: 'center' }}><input type="checkbox" checked={ele.status} name={ele.title} id={ele.title} onClick={() => updateTask(ele.title)} /></span>
+                                                <span style={{ width: '20%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.title}</span>
+                                                <span style={{ width: '40%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{ele.description} </span>
+                                                <span style={{ width: '15%', textAlign: 'center' }}>{ele.priority}</span>
+                                                <span style={{ width: '10%', textAlign: 'center' }}><button onClick={() => deleteTask(ele.title)}>❌</button></span>
 
-                                        </div>
+                                            </div>
                                     })
                                     }</>
                             )
